@@ -24,17 +24,9 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-//            val first: Flow<GenerateRandomItemsResult> =
-//                generateRandomItemsUseCase.apply(GenerateRandomItemsAction)
-//            val second: Flow<GetUserStatusResult> = getMyStatusUseCase.apply(GetMyStatusAction)
-//            first.onEach { GenerateRandomItemsResult.Loading }.zip(second) { items, status ->
-//                if (status is GetUserStatusResult.Success) {
-//                    status
-//                } else {
-//                    items
-//                }
-//            }.updateState().collect()
             generateRandomItemsUseCase.apply(GenerateRandomItemsAction).updateState().collect()
+        }
+        viewModelScope.launch {
             getMyStatusUseCase.apply(GetMyStatusAction).updateState().collect()
         }
     }
@@ -49,6 +41,7 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     override fun produceState(previous: HomeState, result: Result): HomeState {
+        println("XXX produceState result ${result::class.java}")
         return when (result) {
             is GetUserStatusResult.Success -> {
                 HomeState.Loaded(items = statePublisher.value.items)
@@ -58,9 +51,11 @@ class HomeScreenViewModel @Inject constructor(
                 HomeState.Loaded(items = statePublisher.value.items)
             }
 
-            is GenerateRandomItemsResult.Success -> HomeState.Loaded(
-                items = result.items.toPersistentList()
-            )
+            is GenerateRandomItemsResult.Success -> {
+                HomeState.Loaded(
+                    items = result.items.toPersistentList()
+                )
+            }
 
             is GenerateRandomItemsResult.Loading, GetUserStatusResult.Loading -> {
                 HomeState.Loading(items = statePublisher.value.items)

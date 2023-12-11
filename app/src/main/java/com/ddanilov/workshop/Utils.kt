@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 inline fun <reified T : BaseViewModel<S>, reified S : State> T.subscribeAndCollectStateWithLifecycle(): androidx.compose.runtime.State<S> {
+
     OnLifecycleStartAction(::subscribeToEvents)
     return collectState().collectAsStateWithLifecycle()
 }
@@ -20,7 +21,6 @@ fun OnLifecycleStartAction(action: suspend () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
     LifecycleStartEffect(key1 = Unit) {
         coroutineScope.launch {
-            println("XXXXX OnLifecycleStartAction")
             action()
         }
 

@@ -7,17 +7,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 
 @Suppress("TooManyFunctions", "UnusedPrivateMember")
@@ -41,6 +37,7 @@ abstract class BaseViewModel<S : State>(
         return result
             .onEach(::navigate)
             .filter { item -> getNavigationResults().none { it.isInstance(item) } }
+            .distinctUntilChanged()
             .scan(statePublisher.value, ::produceStateWithErrorHandling)
     }
 
@@ -58,7 +55,8 @@ abstract class BaseViewModel<S : State>(
     }
 
     protected fun Flow<Result>.updateState(): Flow<S> {
-        return reduceState(this).onEach { statePublisher.emit(it) }
+        return reduceState(this)
+            .onEach { statePublisher.emit(it) }
     }
 
     fun collectState(): StateFlow<S> = statePublisher

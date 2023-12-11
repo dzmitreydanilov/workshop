@@ -59,7 +59,7 @@ class RandomItemDetailsViewModel @Inject constructor(
                 RandomItemDetailState.ForgotMeSuccess(isUserSaved = false)
             }
 
-            is ForgetMeResult.Loading, RememberMeResult.Loading -> {
+            is ForgetMeResult.Loading, RememberMeResult.Loading, GetUserStatusResult.Loading -> {
                 RandomItemDetailState.Loading(isUserSaved = statePublisher.value.isUserSaved)
             }
 
@@ -69,6 +69,13 @@ class RandomItemDetailsViewModel @Inject constructor(
 
             is DismissDialogClickResult -> {
                 RandomItemDetailState.Loaded(isUserSaved = statePublisher.value.isUserSaved)
+            }
+
+            is GetUserStatusResult.Failed -> {
+                RandomItemDetailState.Error(
+                    error = result.error.message.orEmpty(),
+                    isUserSaved = previous.isUserSaved
+                )
             }
 
             else -> super.produceState(previous, result)

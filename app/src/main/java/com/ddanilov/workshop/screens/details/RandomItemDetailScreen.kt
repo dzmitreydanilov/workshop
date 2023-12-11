@@ -11,15 +11,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ddanilov.workshop.subscribeAndCollectStateWithLifecycle
+import kotlinx.coroutines.launch
 
 @Composable
 fun RandomItemDetailScreen(
@@ -47,44 +55,73 @@ fun RandomItemDetailsScreenContent(
     onAlertDialogConfirmClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ShowDialog(
-        state = state,
-        onDismissClick = onAlertDialogDismissClick,
-        onConfirmClick = onAlertDialogConfirmClick
-    )
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { innerPadding ->
+        ShowDialog(
+            state = state,
+            onDismissClick = onAlertDialogDismissClick,
+            onConfirmClick = onAlertDialogConfirmClick
+        )
 
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(
-            modifier = Modifier.padding(horizontal = 4.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            Text(text = "Details Screen")
+            Column(
+                modifier = Modifier.padding(horizontal = 4.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "Details Screen")
 
-            Text(text = "Item details")
-            Text(
-                text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
-                    " Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when " +
-                    "an unknown printer took a galley of type and scrambled it to make a type specimen book."
-            )
+                Text(text = "Item details")
+                Text(
+                    text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
+                        " Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when " +
+                        "an unknown printer took a galley of type and scrambled it to make a type specimen book."
+                )
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                if (state is RandomItemDetailState.Loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .padding(end = 8.dp, top = 8.dp)
-                    )
-                }
-                if (state.isUserSaved) {
-                    Button(onClick = onForgetMeClick) {
-                        Text(text = "Forget Me")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    if (state is RandomItemDetailState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .padding(end = 8.dp, top = 8.dp)
+                        )
                     }
-                } else {
-                    Button(onClick = onRememberMeClick) {
-                        Text(text = "Remember Me")
+                    if (state.isUserSaved) {
+                        Button(
+                            onClick = onForgetMeClick,
+                            enabled = state !is RandomItemDetailState.Loading
+                        ) {
+                            Text(text = "Forget Me")
+                        }
+                    } else {
+                        Button(
+                            onClick = onRememberMeClick,
+                            enabled = state !is RandomItemDetailState.Loading
+                        ) {
+                            Text(text = "Remember Me")
+                        }
                     }
                 }
+            }
+        }
+
+        LaunchedEffect(key1 = state) {
+            if (state is RandomItemDetailState.Error) {
+                snackbarHostState.showSnackbar(
+                    message = state.error,
+                    actionLabel = "ok",
+                    duration = SnackbarDuration.Indefinite
+                )
             }
         }
     }

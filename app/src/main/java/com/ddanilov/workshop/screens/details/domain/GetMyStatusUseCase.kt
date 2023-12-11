@@ -18,6 +18,7 @@ class GetMyStatusUseCase @Inject constructor(
 
     override fun apply(action: GetMyStatusAction): Flow<GetUserStatusResult> {
         return statusStorage.getStatus().flatMapConcat {
+            delay(2_000)
             it.fold(
                 onSuccess = {
                     flowOf(GetUserStatusResult.Success)
@@ -28,6 +29,5 @@ class GetMyStatusUseCase @Inject constructor(
             )
         }
             .onStart { emit(GetUserStatusResult.Loading) }
-            .onEach { delay(2_000) }
     }
 }
