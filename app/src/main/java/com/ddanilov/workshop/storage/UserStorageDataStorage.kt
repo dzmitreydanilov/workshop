@@ -26,7 +26,7 @@ class UserStorageDataStorage @Inject constructor(
     }
 
     fun rememberMe() {
-        sharedPreferences.edit().putBoolean(REMEMBER_ME, true).apply()
+        sharedPreferences.edit().putBoolean(REMEMBER_ME, true).commit()
     }
 
     fun forgetMe() {

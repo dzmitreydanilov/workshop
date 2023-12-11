@@ -12,9 +12,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -42,7 +44,7 @@ fun RandomItemDetailScreen(
         onRememberMeClick = { viewModel.dispatchEvent(RememberMeEvent) },
         onForgetMeClick = { viewModel.dispatchEvent(ForgetMeEvent) },
         onAlertDialogConfirmClick = { viewModel.dispatchEvent(AlertDialogConfirmClickEvent) },
-        onAlertDialogDismissClick = { viewModel.dispatchEvent(AlertDialogDismissClickEvent) }
+        onAlertDialogDismissClick = { viewModel.dispatchEvent(AlertDialogDismissClickEvent) },
     )
 }
 
@@ -120,8 +122,12 @@ fun RandomItemDetailsScreenContent(
                 snackbarHostState.showSnackbar(
                     message = state.error,
                     actionLabel = "ok",
-                    duration = SnackbarDuration.Indefinite
-                )
+                    duration = SnackbarDuration.Indefinite,
+                ).let {
+                    if (it == SnackbarResult.Dismissed) {
+                        // TODO handle it workshop
+                    }
+                }
             }
         }
     }
