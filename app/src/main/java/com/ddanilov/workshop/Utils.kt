@@ -1,31 +1,30 @@
 package com.ddanilov.workshop
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.compose.LifecycleStartEffect
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.ddanilov.workshop.core.BaseViewModel
 import com.ddanilov.workshop.core.State
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @Composable
-inline fun <reified T : BaseViewModel<S>, reified S : State> T.subscribeAndCollectStateWithLifecycle(): androidx.compose.runtime.State<S> {
-
+inline fun <reified T : BaseViewModel<S>, reified S : State> T.subscribeAndCollectStateWithLifecycle(
+): androidx.compose.runtime.State<S> {
     OnLifecycleStartAction(::subscribeToEvents)
     return collectState().collectAsStateWithLifecycle()
 }
 
 @Composable
 fun OnLifecycleStartAction(action: suspend () -> Unit) {
-    val coroutineScope = rememberCoroutineScope()
-    LifecycleStartEffect(key1 = Unit) {
-        coroutineScope.launch {
+    LifecycleResumeEffect {
+        lifecycleScope.launch {
+            println("XXX OnLifecycleStartAction launch")
             action()
         }
 
-        onStopOrDispose {
-            coroutineScope.cancel()
+        onPauseOrDispose {
+            println("XXX OnLifecycleStartAction cancel")
         }
     }
 }

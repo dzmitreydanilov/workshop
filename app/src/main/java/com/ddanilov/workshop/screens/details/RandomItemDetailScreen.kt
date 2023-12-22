@@ -12,7 +12,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -23,13 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ddanilov.workshop.subscribeAndCollectStateWithLifecycle
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 @Composable
 fun RandomItemDetailScreen(
@@ -46,6 +44,13 @@ fun RandomItemDetailScreen(
         onAlertDialogConfirmClick = { viewModel.dispatchEvent(AlertDialogConfirmClickEvent) },
         onAlertDialogDismissClick = { viewModel.dispatchEvent(AlertDialogDismissClickEvent) },
     )
+
+    LaunchedEffect(key1 = Unit) {
+        while (true) {
+            delay(2_000)
+            viewModel.dispatchEvent(TestEvent)
+        }
+    }
 }
 
 @Composable

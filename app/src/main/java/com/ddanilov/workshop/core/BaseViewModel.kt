@@ -24,7 +24,7 @@ abstract class BaseViewModel<S : State>(
 
     protected val statePublisher = MutableStateFlow(initialState)
     private val navigationFlow = MutableSharedFlow<Navigation>(extraBufferCapacity = 1)
-    private val eventPublisher = MutableSharedFlow<Event>()
+    protected val eventPublisher = MutableSharedFlow<Event>()
 
     private suspend fun navigate(result: Result) {
         val navigation = getNavigationByResult(result)
@@ -49,6 +49,9 @@ abstract class BaseViewModel<S : State>(
 
     open suspend fun subscribeToEvents() {
         eventPublisher
+            .onEach {
+                println("XXXX hello still collecting")
+            }
             .flatMapConcat { reduceState(processEvent(it)) }
             .distinctUntilChanged()
             .collect(statePublisher::emit)

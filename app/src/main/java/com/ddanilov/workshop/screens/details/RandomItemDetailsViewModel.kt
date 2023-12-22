@@ -90,6 +90,7 @@ class RandomItemDetailsViewModel @Inject constructor(
         }
     }
 
+
     private fun toAction(event: Event): Action {
         return when (event) {
             is AlertDialogConfirmClickEvent -> ForgetMeAction

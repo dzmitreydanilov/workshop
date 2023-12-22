@@ -7,3 +7,4 @@ data object ForgetMeEvent : Event
 data object AlertDialogDismissClickEvent : Event
 data object AlertDialogConfirmClickEvent : Event
 data object SnackBackDismissedEvent : Event
+data object TestEvent : Event

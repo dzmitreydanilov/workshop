@@ -15,11 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ddanilov.workshop.components.HomeScreenItem
 import com.ddanilov.workshop.subscribeAndCollectStateWithLifecycle
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.flow.consumeAsFlow
 
 @Composable
 fun HomeScreen(
@@ -27,7 +25,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val viewModel = hiltViewModel<HomeScreenViewModel>()
-
     val state by viewModel.subscribeAndCollectStateWithLifecycle()
 
     HomeScreenContent(
